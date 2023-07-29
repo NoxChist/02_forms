@@ -7,15 +7,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    private final int DEFAULT_PORT = 9999;
-    private final int DEFAULT_POOL_CAPACITY = 64;
     private ServerSocket server;
     private ExecutorService threadPool;
 
-    public Server() throws IOException {
-        server = new ServerSocket(DEFAULT_PORT);
-        threadPool = Executors.newFixedThreadPool(DEFAULT_POOL_CAPACITY);
-        System.out.println("Server stared on port: " + DEFAULT_PORT);
+    public Server(int port, int threadPoolCapacity) throws IOException {
+        server = new ServerSocket(port);
+        threadPool = Executors.newFixedThreadPool(threadPoolCapacity);
+        System.out.println("Server stared on port: " + port);
         System.out.println("Waiting for a connection.");
     }
 

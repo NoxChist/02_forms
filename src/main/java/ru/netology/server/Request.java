@@ -15,11 +15,11 @@ public class Request {
     }
 
     public String getPath() {
-        return method;
+        return path;
     }
 
     public String getProtocol() {
-        return method;
+        return protocol;
     }
 
     public List<String> getBody() {
