@@ -113,6 +113,7 @@ public class Server {
                 } while (in.ready());
 
                 Request request = Request.requestBuilder(reqMsg);
+                var t = request.getQueryParams();
                 /////////////////////////////////////////////////
                 if (request == null) {
                     out.write(("HTTP/1.1 400 Bad Request\r\n" + "Content-Length: 0\r\n" + "Connection: close\r\n" + "\r\n").getBytes());
