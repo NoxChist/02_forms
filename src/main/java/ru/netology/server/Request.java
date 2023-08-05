@@ -15,6 +15,7 @@ public class Request {
     private String query;
     private String protocol;
     private List<String> body;
+    private List<String> headers;
 
     public String getMethod() {
         return method;
@@ -46,7 +47,15 @@ public class Request {
                 request.query = pathParts[1];
             }
             request.protocol = rLineParts[2];
+            request.headers = new ArrayList<>();
+            if(!requestMsg.get(1).isEmpty()){
+                int index = 1;
+                do{
+                    request.headers.add(requestMsg.get(index++));
+                }while(!requestMsg.get(index).isEmpty());
+            }
             request.body = null;
+
             if (!requestMsg.get(requestMsg.size() - 1).equalsIgnoreCase("")) {
                 request.body = new ArrayList<>();
                 int indexBodySeparator = -1;
@@ -61,7 +70,26 @@ public class Request {
                 }
             }
         }
+        request.getPostParams();
         return request;
+    }
+    public List<NameValuePair> getPostParams(){
+        var contentType = headers.stream().filter(header->header.startsWith("Content-Type")).collect(Collectors.toList());
+        if(contentType.size()==1){
+            if(contentType.get(0).contains("application/x-www-form-urlencoded")&&body.size()==1){
+                return URLEncodedUtils.parse(body.get(0), StandardCharsets.UTF_8);
+            }
+        }
+        return null;
+    }
+    public List<NameValuePair> getPostParams(String name){
+        var contentType = headers.stream().filter(header->header.startsWith("Content-Type")).collect(Collectors.toList());
+        if(contentType.size()==1){
+            if(contentType.get(0).contains("application/x-www-form-urlencoded")&&body.size()==1){
+                return URLEncodedUtils.parse(body.get(0), StandardCharsets.UTF_8).stream().filter(pair -> name.equalsIgnoreCase(pair.getName())).collect(Collectors.toList());
+            }
+        }
+        return null;
     }
 
     public List<NameValuePair> getQueryParams() {
