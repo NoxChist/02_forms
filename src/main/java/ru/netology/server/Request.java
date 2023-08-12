@@ -12,7 +12,7 @@ public class Request {
     private final static int AMOUNT_REQLINE_PARTS = 3;
     private String method;
     private String path;
-    private String query;
+    private List<NameValuePair> queryParams;
     private String protocol;
     private List<String> body;
 
@@ -32,18 +32,29 @@ public class Request {
         return body;
     }
 
+    public List<NameValuePair> getQueryParams() {
+        return queryParams;
+    }
+
+    public List<NameValuePair> getQueryParams(String name) {
+        if (queryParams != null) {
+            return queryParams.stream().filter(pair -> name.equalsIgnoreCase(pair.getName())).collect(Collectors.toList());
+        }
+        return null;
+    }
+
     public static Request requestBuilder(List<String> requestMsg) {
         Request request = null;
         String[] rLineParts = requestMsg.get(0).split(" ");
         if (rLineParts.length == AMOUNT_REQLINE_PARTS) {
             request = new Request();
             request.method = rLineParts[0];
-            request.query = null;
             request.path = rLineParts[1];
+            request.queryParams = null;
             if (request.path.contains("?")) {
                 final var pathParts = request.path.split("\\?");
                 request.path = pathParts[0];
-                request.query = pathParts[1];
+                request.queryParams = URLEncodedUtils.parse(pathParts[1], StandardCharsets.UTF_8);
             }
             request.protocol = rLineParts[2];
             request.body = null;
@@ -62,19 +73,5 @@ public class Request {
             }
         }
         return request;
-    }
-
-    public List<NameValuePair> getQueryParams() {
-        if (query != null) {
-            return URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
-        }
-        return null;
-    }
-
-    public List<NameValuePair> getQueryParams(String name) {
-        if (query != null) {
-            return URLEncodedUtils.parse(query, StandardCharsets.UTF_8).stream().filter(pair -> name.equalsIgnoreCase(pair.getName())).collect(Collectors.toList());
-        }
-        return null;
     }
 }
